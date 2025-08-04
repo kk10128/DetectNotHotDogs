@@ -1,0 +1,12 @@
+<!-- templates/index.html -->
+<html>
+    <head>
+    </head>
+    <body>
+        <h1>Hot dog or Not Hot dog?</h1>
+        <form method="post" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+            <input type="file" name="file1">
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>

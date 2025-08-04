@@ -1,12 +1,70 @@
-<!-- templates/index.html -->
+<!DOCTYPE html>
 <html>
-    <head>
-    </head>
-    <body>
-        <h1>Hot dog or Not Hot dog?</h1>
-        <form method="post" action="{{ url_for('upload') }}" enctype="multipart/form-data">
-            <input type="file" name="file1">
-            <input type="submit" value="Submit">
-        </form>
-    </body>
+<head>
+    <title>Hot Dog Detector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        input, button {
+            margin: 10px;
+            padding: 8px;
+        }
+        #result {
+            text-align: left;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        function uploadFile() {
+            const fileInput = document.getElementById('file1');
+            if (!fileInput.files.length) {
+                alert('Please select a file first');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file1', fileInput.files[0]);
+            
+            console.log('Uploading file...'); // Debug log
+            
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response:', data); // Debug log
+                if (Array.isArray(data)) {
+                    let best = data.reduce((a, b) => a.score > b.score ? a : b);
+                    if (best.label.toLowerCase().includes("not hot dog")) {
+                        alert("This is NOT a hot dog! 🌭❌");
+                    } else {
+                        alert("This IS a hot dog! 🌭✅");
+                    }
+                    document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+                } else {
+                    alert("Error: " + (data.error || "Unknown error"));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error); // Debug log
+                alert("Error uploading file: " + error);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Hot Dog Detector 🌭</h1>
+    <input type="file" id="file1" accept="image/*">
+    <button onclick="uploadFile()">Check if Hot Dog</button>
+    <pre id="result"></pre>
+</body>
 </html>
